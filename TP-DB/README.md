@@ -86,7 +86,7 @@ SELECT current_database();
 
 #### Paso 4: Cargar Datos Masivos
 ```sql
--- Ejecutar carga masiva de datos (1000 registros)
+-- Ejecutar carga masiva de datos (20,000 registros)
 \i 'C:/Users/lg606/Desktop/UTN-SegundoCuatrimestre/TP-DB/carga_masiva_simple.sql'
 
 -- Verificar cantidad de datos cargados
@@ -297,7 +297,7 @@ LC_CTYPE = 'es_ES.UTF-8';
 ```
 
 #### Problema de Carga Masiva Incompleta
-**Síntoma:** Solo se carga 1 registro en lugar de 10,000
+**Síntoma:** Solo se carga 1 registro en lugar de 20,000
 
 **Verificación:**
 ```sql
@@ -378,10 +378,10 @@ SELECT
 - Validaciones de dominio con CHECK constraints
 
 ### 2. `carga_masiva_simple.sql`
-**Propósito**: Pobla la base de datos con datos de prueba
-- Inserción de 1000 pedidos aleatorios
+**Propósito**: Pobla la base de datos con datos de prueba masivos
+- Inserción de 20,000 pedidos aleatorios
 - Creación de envíos asociados (relación 1:1)
-- Datos realistas para testing y análisis
+- Datos realistas para testing y análisis de rendimiento
 
 ### 3. `indices_optimizacion.sql`
 **Propósito**: Mejora el rendimiento de consultas
@@ -446,7 +446,7 @@ SELECT
 1. **`schema_definicion_tablas.sql`** - Estructura base de datos con todas las restricciones
 2. **`validaciones_constraints.sql`** - Pruebas de integridad (inserciones correctas/erróneas)
 3. **`indices_optimizacion.sql`** - Índices estratégicos para performance
-4. **`carga_masiva_simple.sql`** - Carga de 1000 registros con SQL puro
+4. **`carga_masiva_simple.sql`** - Carga de 20,000 registros con SQL puro
 5. **`vistas_reportes.sql`** - 4 vistas para reportes de negocio
 6. **`funciones_stored_procedures.sql`** - Funciones con lógica de negocio
 7. **`consultas_negocio.sql`** - Consultas complejas (JOIN, GROUP BY, subconsultas)

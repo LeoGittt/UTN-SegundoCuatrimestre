@@ -1,0 +1,179 @@
+// =========================================================================
+// SISTEMA DE GESTIÓN DE PEDIDOS Y ENVÍOS - TFI BASE DE DATOS I
+// Archivo: sistema_pedidos_envios.dbml
+// Propósito: Diagrama Entidad-Relación para dbdiagram.io
+// Relación: 1:1 entre Pedidos y Envíos
+// Autor: TFI Bases de Datos I - UTN
+// =========================================================================
+
+Project TFI_Sistema_Pedidos_Envios {
+  database_type: 'PostgreSQL'
+  Note: '''
+    Sistema de Gestión de Pedidos y Envíos
+    Trabajo Final Integrador - Bases de Datos I
+    Universidad Tecnológica Nacional (UTN)
+    
+    Características principales:
+    - Relación 1:1 entre Pedidos y Envíos
+    - Baja lógica implementada
+    - Restricciones de integridad completas
+    - Validaciones de dominio con CHECK constraints
+  '''
+}
+
+// =========================================================================
+// TABLA: PEDIDOS
+// =========================================================================
+Table Pedidos {
+  id bigserial [primary key, note: 'Clave primaria autoincremental']
+  eliminado boolean [not null, default: false, note: 'Baja lógica: FALSE=activo, TRUE=eliminado']
+  
+  // Datos del pedido
+  numero varchar(20) [not null, unique, note: 'Código único del pedido (formato: PED-XXXXX)']
+  fecha date [not null, note: 'Fecha de creación del pedido']
+  clienteNombre varchar(120) [not null, note: 'Nombre del cliente que realiza el pedido']
+  total decimal(12,2) [not null, note: 'Monto total del pedido (validado >= 0)']
+  estado varchar(20) [not null, note: 'Estado del pedido: NUEVO, FACTURADO, ENVIADO']
+  
+  // Índices
+  indexes {
+    (numero) [unique, name: 'idx_pedidos_numero']
+    (clienteNombre, fecha) [name: 'idx_pedidos_cliente_fecha']
+    (estado, eliminado) [name: 'idx_pedidos_estado_eliminado']
+  }
+  
+  Note: '''
+    Tabla principal que almacena información de pedidos realizados por clientes.
+    
+    Restricciones implementadas:
+    - CHECK: total >= 0.00
+    - CHECK: estado IN ('NUEVO', 'FACTURADO', 'ENVIADO')
+    
+    Baja lógica: Los registros no se eliminan físicamente, 
+    se marca el campo 'eliminado' como TRUE.
+  '''
+}
+
+// =========================================================================
+// TABLA: ENVÍOS
+// =========================================================================
+Table Envios {
+  id bigserial [primary key, note: 'Clave primaria autoincremental']
+  eliminado boolean [not null, default: false, note: 'Baja lógica: FALSE=activo, TRUE=eliminado']
+  
+  // Datos del envío
+  tracking varchar(40) [unique, note: 'Código de seguimiento único del envío']
+  costo decimal(10,2) [not null, note: 'Costo del envío (validado >= 0)']
+  empresa varchar(30) [not null, note: 'Empresa transportista: ANDREANI, OCA, CORREO_ARG']
+  tipo varchar(20) [not null, note: 'Tipo de envío: ESTANDAR, EXPRES']
+  estado varchar(30) [not null, note: 'Estado del envío: EN_PREPARACION, EN_TRANSITO, ENTREGADO']
+  fechaDespacho date [note: 'Fecha de despacho del envío']
+  fechaEstimada date [note: 'Fecha estimada de entrega']
+  
+  // Relación 1:1 con Pedidos
+  pedido_id bigint [not null, unique, ref: - Pedidos.id, note: 'FK única hacia Pedidos (garantiza relación 1:1)']
+  
+  // Índices
+  indexes {
+    (tracking) [unique, name: 'idx_envios_tracking']
+    (pedido_id) [unique, name: 'idx_envios_pedido_unique']
+    (empresa, estado) [name: 'idx_envios_empresa_estado']
+    (fechaDespacho, fechaEstimada) [name: 'idx_envios_fechas']
+  }
+  
+  Note: '''
+    Tabla que gestiona envíos asociados a pedidos con relación 1:1.
+    
+    Restricciones implementadas:
+    - CHECK: costo >= 0.00
+    - CHECK: empresa IN ('ANDREANI', 'OCA', 'CORREO_ARG')
+    - CHECK: tipo IN ('ESTANDAR', 'EXPRES')
+    - CHECK: estado IN ('EN_PREPARACION', 'EN_TRANSITO', 'ENTREGADO')
+    - CHECK: fechaEstimada >= fechaDespacho
+    
+    Relación 1:1: pedido_id es UNIQUE y NOT NULL, 
+    garantizando que cada pedido tenga exactamente un envío.
+    
+    Eliminación en cascada: ON DELETE CASCADE desde Pedidos.
+  '''
+}
+
+// =========================================================================
+// RELACIONES
+// =========================================================================
+Ref: Pedidos.id - Envios.pedido_id [
+  note: '''
+    Relación 1:1 entre Pedidos y Envíos
+    
+    Características:
+    - Un pedido tiene exactamente un envío
+    - Un envío pertenece a exactamente un pedido
+    - Implementada con FK + UNIQUE constraint
+    - Eliminación en cascada (CASCADE)
+    
+    Reglas de negocio:
+    - Todo pedido debe tener un envío asociado
+    - No puede existir un envío sin pedido
+    - La relación es obligatoria y unívoca
+  '''
+]
+
+// =========================================================================
+// NOTAS ADICIONALES DEL PROYECTO
+// =========================================================================
+Note project_info {
+  '''
+  INFORMACIÓN DEL PROYECTO TFI
+  
+  📋 Cumplimiento de Requisitos Académicos:
+  ✅ DER con 2+ entidades (Pedidos, Envíos)
+  ✅ Relación 1:1 correctamente modelada
+  ✅ PRIMARY KEY en ambas tablas (BIGSERIAL)
+  ✅ FOREIGN KEY con integridad referencial
+  ✅ UNIQUE constraints para garantizar unicidad
+  ✅ CHECK constraints para validaciones de dominio
+  ✅ Restricciones de dominio completas
+  
+  🔧 Características Técnicas:
+  - Motor: PostgreSQL 13+
+  - Escalabilidad: 20,000+ registros
+  - Baja lógica: Eliminación no destructiva
+  - Integridad: Validaciones a nivel BD
+  - Performance: Índices estratégicos
+  
+  👥 Autores:
+  - Leonel González
+  - [Nombre del compañero]
+  
+  🎓 Institución:
+  Universidad Tecnológica Nacional (UTN)
+  Bases de Datos I - Trabajo Final Integrador
+  Octubre 2025
+  '''
+}
+
+// =========================================================================
+// ENUM TYPES (Para documentación de valores válidos)
+// =========================================================================
+Enum estado_pedido {
+  NUEVO [note: 'Pedido recién creado, pendiente de procesamiento']
+  FACTURADO [note: 'Pedido facturado, listo para envío']
+  ENVIADO [note: 'Pedido despachado y en tránsito']
+}
+
+Enum empresa_envio {
+  ANDREANI [note: 'Empresa de logística Andreani']
+  OCA [note: 'Empresa de correo OCA']
+  CORREO_ARG [note: 'Correo Argentino']
+}
+
+Enum tipo_envio {
+  ESTANDAR [note: 'Envío estándar (3-7 días hábiles)']
+  EXPRES [note: 'Envío express (24-48 horas)']
+}
+
+Enum estado_envio {
+  EN_PREPARACION [note: 'Envío en preparación en depósito']
+  EN_TRANSITO [note: 'Envío despachado y en tránsito']
+  ENTREGADO [note: 'Envío entregado al destinatario']
+}
