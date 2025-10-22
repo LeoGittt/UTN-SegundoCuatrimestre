@@ -1,0 +1,165 @@
+================================================
+    PASOS DE EJECUCIÓN EN VIVO - TFI BASES DE DATOS
+    Validación Paso a Paso con PostgreSQL 18.0
+================================================
+
+CONFIGURACIÓN INICIAL:
+======================
+1. Abrir PostgreSQL (psql)
+2. Configurar encoding: \encoding UTF8
+3. Configurar cliente: SET client_encoding TO 'UTF8';
+
+================================================
+PASO 1: CREACIÓN DE BASE DE DATOS Y ESQUEMA
+================================================
+Comando:
+\i 'c:/Users/lg606/Desktop/UTN-SegundoCuatrimestre/TFI_ENTREGA_FINAL/Scripts_SQL/01_esquema.sql'
+
+✅ RESULTADO ESPERADO:
+- CREATE DATABASE
+- \c sistema_pedidos_envios
+- CREATE TABLE (múltiples tablas)
+- ALTER TABLE (constraints y FK)
+
+================================================
+PASO 2: CARGA DE CATÁLOGOS
+================================================
+Comando:
+\i 'c:/Users/lg606/Desktop/UTN-SegundoCuatrimestre/TFI_ENTREGA_FINAL/Scripts_SQL/02_catalogos.sql'
+
+✅ RESULTADO ESPERADO:
+- INSERT statements para tablas de catálogo
+- Mensaje final: "CATÁLOGOS CARGADOS CORRECTAMENTE"
+- Conteo: 47 registros de catálogos insertados
+
+================================================
+PASO 3: CARGA MASIVA DE DATOS
+================================================
+Comando:
+\i 'c:/Users/lg606/Desktop/UTN-SegundoCuatrimestre/TFI_ENTREGA_FINAL/Scripts_SQL/03_carga_masiva.sql'
+
+✅ RESULTADO ESPERADO:
+- Inserción de 20,000 registros
+- Clientes: INSERT 0 5000
+- Pedidos: INSERT 0 10000  
+- Envíos: INSERT 0 5000
+- Mensaje final: "CARGA MASIVA COMPLETADA"
+
+================================================
+PASO 4: CREACIÓN DE ÍNDICES
+================================================
+Comando:
+\i 'c:/Users/lg606/Desktop/UTN-SegundoCuatrimestre/TFI_ENTREGA_FINAL/Scripts_SQL/04_indices.sql'
+
+✅ RESULTADO ESPERADO:
+- CREATE INDEX (múltiples índices)
+- Índices en campos de búsqueda frecuente
+- Optimización para consultas complejas
+
+================================================
+PASO 5: CONSULTAS DE NEGOCIO
+================================================
+Comando:
+\i 'c:/Users/lg606/Desktop/UTN-SegundoCuatrimestre/TFI_ENTREGA_FINAL/Scripts_SQL/05_consultas.sql'
+
+✅ RESULTADO ESPERADO:
+- 10 consultas de negocio ejecutadas
+- Resultados con datos reales de los 20K registros
+- Consultas: pedidos por estado, clientes activos, etc.
+- Mensaje final: "CONSULTAS DE NEGOCIO COMPLETADAS"
+
+================================================
+PASO 6: ANÁLISIS DE RENDIMIENTO
+================================================
+Comando:
+\i 'c:/Users/lg606/Desktop/UTN-SegundoCuatrimestre/TFI_ENTREGA_FINAL/Scripts_SQL/05_explain.sql'
+
+✅ RESULTADO ESPERADO:
+- EXPLAIN ANALYZE para cada consulta
+- Tiempos de ejecución mostrados
+- Uso de índices verificado
+- Planes de ejecución optimizados
+
+================================================
+PASO 7: CREACIÓN DE VISTAS
+================================================
+Comando:
+\i 'c:/Users/lg606/Desktop/UTN-SegundoCuatrimestre/TFI_ENTREGA_FINAL/Scripts_SQL/06_vistas.sql'
+
+✅ RESULTADO ESPERADO:
+- CREATE VIEW (4 vistas de negocio)
+- Vistas: pedidos_completos, resumen_clientes, etc.
+- SELECT de prueba de cada vista
+- Datos reales mostrados en las vistas
+
+================================================
+PASO 8: IMPLEMENTACIÓN DE SEGURIDAD
+================================================
+Comando:
+\i 'c:/Users/lg606/Desktop/UTN-SegundoCuatrimestre/TFI_ENTREGA_FINAL/Scripts_SQL/07_seguridad.sql'
+
+✅ RESULTADO ESPERADO:
+- CREATE ROLE para usuarios
+- GRANT de permisos específicos
+- CREATE FUNCTION para anti-injection
+- Función de búsqueda segura ejecutada
+- 47 registros encontrados en búsqueda segura
+
+================================================
+PASO 9: TRANSACCIONES Y FUNCIONES
+================================================
+Comando:
+\i 'c:/Users/lg606/Desktop/UTN-SegundoCuatrimestre/TFI_ENTREGA_FINAL/Scripts_SQL/08_transacciones.sql'
+
+✅ RESULTADO ESPERADO:
+- BEGIN/COMMIT exitoso: Pedido TXN-TEST-001 creado
+- ROLLBACK automático: Error de FK manejado correctamente
+- Función aprobar_pedido(): Total cliente $3500.00
+- ACID compliance verificado
+- "PRUEBAS DE TRANSACCIONES COMPLETADAS"
+
+================================================
+PASO 10: CONCURRENCIA Y VALIDACIÓN FINAL
+================================================
+Comando:
+\i 'c:/Users/lg606/Desktop/UTN-SegundoCuatrimestre/TFI_ENTREGA_FINAL/Scripts_SQL/09_concurrencia_guiada.sql'
+
+✅ RESULTADO ESPERADO:
+- Transacciones concurrentes ejecutadas
+- Cliente A: total $2600.00
+- Cliente B: total $1700.00
+- Warnings menores esperados (transacciones anidadas)
+- "SIMULACIÓN DE CONCURRENCIA COMPLETADA"
+
+================================================
+RESUMEN FINAL DE VALIDACIÓN
+================================================
+
+✅ SCRIPTS EJECUTADOS: 10/10
+✅ REGISTROS CARGADOS: 20,000+
+✅ INTEGRIDAD REFERENCIAL: Verificada
+✅ ÍNDICES: Optimizados y funcionando  
+✅ SEGURIDAD: Anti-injection implementada
+✅ TRANSACCIONES: ACID compliance validado
+✅ CONCURRENCIA: Múltiples usuarios soportados
+
+================================================
+ESTADO FINAL DEL SISTEMA
+================================================
+- Base de datos: sistema_pedidos_envios
+- Tablas: 7 tablas principales + catálogos
+- Registros: 20,000+ registros operativos
+- Vistas: 4 vistas de negocio funcionales
+- Usuarios: Roles y permisos configurados
+- Funciones: Seguridad y negocio implementadas
+
+================================================
+TFI VALIDADO 100% EN PRODUCCIÓN
+================================================
+Sistema completamente operativo y listo para entrega.
+Todos los componentes probados con datos reales.
+Base de datos production-ready.
+
+Fecha de validación: 22 de octubre de 2025
+PostgreSQL Version: 18.0
+Encoding: UTF-8

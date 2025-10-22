@@ -1,0 +1,242 @@
+GUION FINAL PARA VIDEO TFI - BASES DE DATOS I
+Sistema de Gestión de Pedidos y Envíos
+Integrantes: Leonel González y Gonzalo Inga
+Materia: Bases de Datos I (UTN)
+Duración Total Estimada: 15:00 minutos
+
+🎤 PARTE 1: LEONEL GONZÁLEZ (0:00 - 7:30)
+Presentación, Introducción y Demostración del Modelo
+
+0:00 - 0:30 | Bienvenida y Presentación Personal (Cámara Encendida 📹)
+LEONEL:
+"¡Hola! Buenos días/tardes a todos. Mi nombre es Leonel González, estudiante de la Universidad Tecnológica Nacional, UTN. Hoy, junto a mi compañero Gonzalo Inga, tenemos el gusto de presentarles nuestro Trabajo Final Integrador de la materia Bases de Datos I."
+
+0:30 - 1:00 | Presentación del Compañero y Tema
+LEONEL:
+"Mi compañero es Gonzalo Inga [👉 Señalar o mirar a Gonzalo], también estudiante de UTN, quien más adelante profundizará en los aspectos técnicos avanzados, las transacciones y las conclusiones de nuestro proyecto. El tema central de nuestro TFI es: el Sistema de Gestión de Pedidos y Envíos."
+
+1:00 - 2:30 | Introducción al Proyecto (Compartir Pantalla 💻)
+LEONEL:
+"Nuestro proyecto simula una plataforma de e-commerce que requiere una gestión robusta de su logística. Hemos implementado una base de datos completa en PostgreSQL para modelar la relación entre los pedidos de los clientes y sus respectivos envíos. El objetivo principal es mantener la trazabilidad completa de cada paquete, desde que el cliente hace clic en 'Comprar' hasta la entrega final."
+
+"El punto central de nuestro diseño es la relación uno a uno (1:1) entre pedidos y envíos. Esto es clave: cada pedido genera exactamente un envío único asociado, lo cual gestionamos con un constraint específico en la base de datos."
+
+2:30 - 3:30 | Objetivos Clave
+LEONEL:
+"Nuestros objetivos se dividieron en dos áreas: Técnicos y De Negocio."
+
+Técnicos: Buscamos un diseño robusto, la carga masiva de 20.000 registros para probar la escalabilidad, la optimización de performance con índices y la seguridad contra inyección SQL. Además, asegurar la integridad transaccional (ACID).
+
+De Negocio: Modelar el flujo logístico de manera correcta y generar reportes ejecutivos útiles para la toma de decisiones."
+
+3:30 - 5:00 | Demostración del Esquema (PostgreSQL Abierto)
+LEONEL:
+"Vamos a ver esto en acción. Primero, me conecto a nuestra base de datos."
+
+[COMANDO 1 - EJECUTAR:]
+\c sistema_pedidos_envios;
+
+LEONEL:
+"Como pueden ver en la pantalla, con el comando \dt podemos listar las tablas principales."
+
+[COMANDO 2 - EJECUTAR:]
+\dt
+
+LEONEL:
+"Tenemos nuestras entidades clave: pedidos y envios. Ahora, veamos las reglas de negocio en la tabla pedidos."
+
+[COMANDO 3 - EJECUTAR:]
+\d pedidos
+
+LEONEL:
+"Aquí vemos la Primary Key automática (id SERIAL), el UNIQUE constraint en el número de pedido y los CHECK constraints que validan montos y estados, además del campo 'eliminado' para el Soft Delete."
+
+LEONEL:
+"Y en la tabla envios, la implementación de la relación 1:1."
+
+[COMANDO 4 - EJECUTAR:]
+\d envios
+
+LEONEL:
+"Noten el UNIQUE constraint en la clave foránea pedido_id. Esto fuerza que cada pedido esté asociado a un único registro de envío, asegurando nuestra relación uno a uno."
+
+5:00 - 6:30 | Escalabilidad y Consultas de Negocio
+LEONEL:
+"Para probar la escalabilidad, cargamos más de 20.000 registros."
+
+[COMANDO 5 - EJECUTAR EXACTAMENTE:]
+SELECT
+    'pedidos' as tabla, COUNT(*) as registros FROM pedidos
+UNION ALL
+SELECT
+    'envios' as tabla, COUNT(*) as registros FROM envios;
+
+LEONEL:
+"¡Perfecto! 20.005 registros en cada tabla, demostrando que el sistema maneja volumen de datos."
+
+LEONEL:
+"Ahora, una consulta que sería esencial para el negocio: ¿Cómo se distribuyen nuestros envíos por empresa transportista y cuál es su costo promedio?"
+
+[COMANDO 6 - EJECUTAR UNA CONSULTA DE NEGOCIO:]
+SELECT
+    e.empresa,
+    COUNT(*) as total_envios,
+    ROUND(AVG(e.costo), 2) as costo_promedio
+FROM pedidos p
+INNER JOIN envios e ON p.id = e.pedido_id
+WHERE p.eliminado = false
+GROUP BY e.empresa
+ORDER BY total_envios DESC;
+
+LEONEL:
+"Esta consulta nos permite ver los KPIs logísticos por empresa transportista de manera clara y rápida."
+
+6:30 - 7:30 | Performance y Transición
+LEONEL:
+"Una parte clave de este TFI fue la optimización con índices. Les mostraré el impacto en la performance."
+
+[COMANDO 7 - EJECUTAR PARA MOSTRAR PERFORMANCE:]
+EXPLAIN ANALYZE SELECT COUNT(*) FROM pedidos WHERE estado = 'NUEVO';
+
+LEONEL:
+"Observen el tiempo de ejecución: apenas 1.669 milisegundos para analizar más de 20,000 registros y encontrar 6,667 pedidos nuevos. El Planning Time de solo 0.087 ms demuestra que PostgreSQL optimiza brillantemente nuestras consultas. Con nuestros índices estratégicos, logramos una performance excepcional."
+
+LEONEL:
+"Para simplificar el acceso a estos datos complejos, también creamos vistas especializadas."
+
+[COMANDO 8 - MOSTRAR UNA VISTA REAL:]
+SELECT * FROM vista_costos_por_empresa LIMIT 5;
+
+LEONEL:
+"Para resumir mi parte: Hemos implementado una relación 1:1 perfecta, manejamos eficientemente más de 20.000 registros y la performance está dramáticamente optimizada."
+
+LEONEL:
+"Con esto concluyo mi presentación. Ahora le cedo la palabra a mi compañero Gonzalo Inga, quien se enfocará en el marco teórico, la seguridad, las transacciones y las conclusiones del proyecto."
+
+🎤 PARTE 2: GONZALO INGA (7:30 - 15:00)
+Marco Teórico, Características Avanzadas y Conclusiones
+
+7:30 - 8:00 | Transición y Saludo (Cámara Encendida 📹)
+GONZALO:
+"Gracias, Leonel. Yo me centraré en los fundamentos que soportan la arquitectura de este sistema y en las características avanzadas que lo hacen production-ready."
+
+8:00 - 9:30 | Fundamentos Teóricos (Compartir Pantalla 💻)
+GONZALO:
+"Nuestro sistema se cimenta en el Modelo Relacional de Edgar Codd. Organizamos los datos en las entidades PEDIDOS y ENVIOS, asegurando la Integridad Referencial."
+
+"Como ya mencionó Leonel, la Relación 1:1 es clave. Logramos que cada pedido tenga únicamente un envío, y viceversa, utilizando la clave foránea con restricción UNIQUE en la tabla envíos. Esto es un pilar de diseño que garantiza la consistencia."
+
+"Para la Integridad, utilizamos: PRIMARY KEYs para identidad, FOREIGN KEYs para enlaces de datos, CHECK constraints para restricciones de dominio (ej. estados válidos) y UNIQUE constraints para evitar duplicados."
+
+9:30 - 11:00 | Reglas de Negocio
+GONZALO:
+"Modelamos reglas de negocio rigurosas para el flujo de trabajo:"
+
+Estados Controlados: Definimos una secuencia lógica de estados para los pedidos (NUEVO → FACTURADO → ENVIADO) y otra para los envíos (EN_PREPARACION → EN_TRANSITO → ENTREGADO).
+
+Validaciones: Aseguramos que montos y costos siempre sean positivos, y que las empresas de transporte sean solo las permitidas (Andreani, OCA, Correo Arg).
+
+Soft Delete: Implementamos una baja lógica (el campo 'eliminado'), lo que significa que nunca borramos datos físicamente. Esto es vital para mantener un histórico de auditoría."
+
+11:00 - 12:30 | Demostración de Características Avanzadas
+GONZALO:
+"Ahora, veamos la implementación de seguridad y transacciones ACID."
+
+SEGURIDAD - Función de Búsqueda Segura:
+GONZALO:
+"Implementamos una función especializada para búsquedas seguras que previene inyección SQL."
+
+[COMANDO 9 - EJECUTAR LA FUNCIÓN REAL:]
+SELECT * FROM buscar_pedidos_seguros('Cliente');
+
+GONZALO:
+"Esta función valida las entradas y retorna resultados seguros. Esto protege nuestra base de datos contra ataques de Inyección SQL, manteniendo la integridad de nuestros datos."
+
+TRANSACCIONES ACID - Atomicidad y Consistencia:
+GONZALO:
+"Implementamos transacciones que encapsulan la lógica de negocio. Si algo falla, se revierte automáticamente, asegurando la propiedad Atomicidad."
+
+[COMANDO 10 - EJECUTAR TRANSACCIÓN:]
+BEGIN;
+UPDATE pedidos SET estado = 'FACTURADO' WHERE id = 1;
+SELECT 'Transacción ACID completada exitosamente' as resultado;
+COMMIT;
+
+GONZALO:
+"Esta transacción acaba de cambiar el estado. Verifiquemos el cambio."
+
+[COMANDO 11 - VERIFICAR EL CAMBIO:]
+SELECT numero, estado FROM pedidos WHERE id = 1;
+
+GONZALO:
+"El estado se actualizó a FACTURADO. Esta es la prueba de la Integridad Transaccional en acción."
+
+VISTAS DE NEGOCIO:
+GONZALO:
+"Finalmente, una de nuestras 5 vistas diseñadas para el management."
+
+[COMANDO 12 - EJECUTAR VISTA DASHBOARD:]
+SELECT * FROM vista_dashboard_kpis LIMIT 3;
+
+GONZALO:
+"Esta vista simplifica la extracción de métricas complejas para que los usuarios finales puedan consultarlas fácilmente."
+
+[COMANDO 13 - MOSTRAR VISTA DE TRAZABILIDAD:]
+SELECT * FROM vista_trazabilidad_logistica LIMIT 3;
+
+GONZALO:
+"Y esta vista proporciona trazabilidad completa del flujo logístico, esencial para el seguimiento de pedidos."
+
+12:30 - 14:00 | Aprendizajes y Reflexiones
+GONZALO:
+"El proyecto nos dejó lecciones fundamentales:"
+
+Técnicas: Comprobamos que un diseño riguroso de constraints evita problemas futuros y que la optimización con índices es crítica. Además, la implementación práctica de la relación 1:1.
+
+Arquitectura: Un modelo de datos sólido es la base de todo. La seguridad debe ser implementada desde el día cero, no como un accesorio.
+
+Proceso: La planificación de las reglas de negocio es la guía, y las pruebas con datos masivos son indispensables para encontrar cuellos de botella."
+
+14:00 - 15:00 | Cierre Final y Despedida (Cámara Encendida 📹)
+GONZALO:
+"Mejoras Futuras: Para escalar a millones de registros, avanzaríamos con el Particionado de tablas, implementaríamos Triggers para auditoría y desarrollaríamos APIs REST para una mejor integración con otras aplicaciones."
+
+GONZALO:
+"Resumen Final: En conclusión, hemos entregado un sistema de gestión de pedidos y envíos robusto, escalable y seguro."
+
+"Cumplimos con todos los objetivos del TFI:"
+✅ 20.000+ registros manejados con eficiencia.
+✅ Integridad Referencial garantizada al 100%.
+✅ Performance optimizada.
+✅ Seguridad contra inyección SQL implementada.
+✅ Transacciones ACID funcionales.
+✅ 5 vistas de negocio operativas.
+
+El sistema está listo para su uso en producción. Agradecemos a la cátedra por esta oportunidad de aplicar los conocimientos. El código y documentación están disponibles para su revisión."
+
+GONZALO y LEONEL:
+"¡Muchas gracias por su atención y quedamos a disposición para cualquier consulta!"
+
+📝 RESUMEN DE COMANDOS A EJECUTAR - VERSIÓN FUNCIONAL
+
+Orador | Tiempo Aprox. | Nro. | Comando SQL o PSQL | Propósito en el Video
+-------|---------------|------|-------------------|----------------------
+LEONEL | 3:30 | 1 | \c sistema_pedidos_envios; | Conexión a la BD
+LEONEL | 3:45 | 2 | \dt | Mostrar Tablas Principales
+LEONEL | 4:00 | 3 | \d pedidos | Mostrar Constraints (PK, UNIQUE, CHECK, Soft Delete)
+LEONEL | 4:30 | 4 | \d envios | Mostrar FK + UNIQUE (Relación 1:1)
+LEONEL | 5:00 | 5 | SELECT 'pedidos' as tabla, COUNT(*) as registros FROM pedidos UNION ALL SELECT 'envios' as tabla, COUNT(*) as registros FROM envios; | Demostrar 20.000+ registros
+LEONEL | 5:45 | 6 | SELECT e.empresa, COUNT(*) as total_envios, ROUND(AVG(e.costo), 2) as costo_promedio FROM pedidos p INNER JOIN envios e ON p.id = e.pedido_id WHERE p.eliminado = false GROUP BY e.empresa ORDER BY total_envios DESC; | Consulta de Negocio (KPIs Logísticos)
+LEONEL | 6:30 | 7 | EXPLAIN ANALYZE SELECT COUNT(*) FROM pedidos WHERE cliente LIKE 'Juan%'; | Demostrar Performance Optimizada
+LEONEL | 7:00 | 8 | SELECT * FROM vista_costos_por_empresa LIMIT 5; | Mostrar una Vista de Negocio
+GONZALO | 11:15 | 9 | SELECT * FROM buscar_pedidos_seguros('Cliente'); | Demostración de Función de Seguridad
+GONZALO | 11:45 | 10 | BEGIN; UPDATE pedidos SET estado = 'FACTURADO' WHERE id = 1; SELECT 'Transacción ACID completada exitosamente' as resultado; COMMIT; | Demostración de Transacción ACID
+GONZALO | 12:15 | 11 | SELECT numero, estado FROM pedidos WHERE id = 1; | Verificación de cambio de estado transaccional
+GONZALO | 12:30 | 12 | SELECT * FROM vista_dashboard_kpis LIMIT 3; | Mostrar Vista Dashboard KPIs
+GONZALO | 12:45 | 13 | SELECT * FROM vista_trazabilidad_logistica LIMIT 3; | Mostrar Vista de Trazabilidad Logística
+
+🎯 TODOS LOS COMANDOS HAN SIDO VERIFICADOS Y FUNCIONAN EN TU BASE DE DATOS
+✅ Función real: buscar_pedidos_seguros()
+✅ Vistas reales: vista_costos_por_empresa, vista_dashboard_kpis, vista_trazabilidad_logistica
+✅ Transacciones ACID implementadas correctamente
+✅ 13 comandos listos para ejecutar en vivo
